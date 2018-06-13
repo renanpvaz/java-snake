@@ -7,7 +7,7 @@ public class BoardMain extends JFrame {
     }
     
     private void initUI() {
-        add(new Board());
+        add(new Game());
 
         setTitle("Moving sprite");
         setSize(800, 600);

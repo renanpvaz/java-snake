@@ -6,13 +6,10 @@ import java.util.*;
 public class Snake {
     private Direction direction;
     private Point head;
-    private Point changedDirectionAt;
     private ArrayList<Point> tail;
     
     public Snake() {
         this.head = new Point(200, 150);
-        this.changedDirectionAt = new Point(0, 0);
-        
         this.direction = Direction.RIGHT;
         this.tail = new ArrayList<Point>();
         
@@ -33,40 +30,19 @@ public class Snake {
         
         this.tail = newTail;
         
-        this.head.move(this.direction, 20);
+        this.head.move(this.direction, 10);
     }
     
     public void addTail() {
-        this.tail.add(new Point(head));
-    }
+        Point last = this.tail.get(this.tail.size() - 1);
         
-    public int getOffsetX() {
-        switch(this.direction) {
-            case RIGHT: return -8;      
-            case LEFT: return 8;        
-        }
-        
-        return 0;
+        this.tail.add(new Point(-10, -10));
     }
     
-    public int getOffsetY() {
-        switch(this.direction) {
-            case UP: return 10;      
-            case DOWN: return -10;        
-        }
-        
-        return 0;
-    }
-
-    public void keyReleased(KeyEvent e) {
-        switch(e.getKeyCode()) {
-            case KeyEvent.VK_LEFT: direction = Direction.LEFT; break;    
-            case KeyEvent.VK_RIGHT: direction = Direction.RIGHT; break;
-            case KeyEvent.VK_UP: direction = Direction.UP; break;  
-            case KeyEvent.VK_DOWN: direction = Direction.DOWN; break;        
-        }
-        
-        this.changedDirectionAt = new Point(this.head);
+    public void turn(Direction d) {       
+        if (d.isX() && direction.isY() || d.isY() && direction.isX()) {
+           direction = d; 
+        }       
     }
     
     public ArrayList<Point> getTail() {
@@ -75,10 +51,5 @@ public class Snake {
     
     public Point getHead() {
         return this.head;
-    }
-    
-    public String toString() {
-        return "head = " + head +
-            "\n tail = [ " + tail.get(0) + "\n," + tail.get(1) + "\n," + tail.get(2) + "\n]"; 
     }
 }

@@ -41,31 +41,6 @@ public class Point {
         return this;
     }
     
-     public Point decrementX() {
-        this.x -= 10;
-        
-        return this;
-    }
-     
-     public Point decrementY() {
-        this.y -= 10;
-        
-        return this;
-    }
-    
-    public Point incrementY() {
-        this.y += 10;
-        
-        return this;
-    }
-    
-     
-    public Point incrementX() {
-        this.x += 10;
-        
-        return this;
-    }
-    
     public boolean equals(Point p) {
         return this.x == p.getX() && this.y == p.getY();
     } 
