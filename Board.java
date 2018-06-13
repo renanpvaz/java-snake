@@ -9,12 +9,14 @@ import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
 import java.util.Timer;
 import java.awt.Font;
+import java.util.Random;
 
 public class Board extends JPanel {
     private Timer timer;
     private Snake snake;
     private final int DELAY = 200;
     private long lastFpsTime;
+    private Point cherry;
     
     private int fps;
 
@@ -50,14 +52,33 @@ public class Board extends JPanel {
         g2d.setColor(Color.GREEN);
         g2d.setFont(new Font("Courier", Font.PLAIN, 12)); 
 
-        g2d.drawString(snake.toString(), 10, 10);
+        g2d.drawString(snake.toString(), 10, 14);
         
         g2d.drawString("@", p.getX(), p.getY());
         
         for(Point t : snake.getTail()) {
             g2d.drawString("O", t.getX(), t.getY());
         }
+        
+        if (Math.random() <= .1 && cherry == null) {
+            spawnCherry();
+        }
+        
+        if (cherry != null) {
+            g2d.setColor(Color.RED);
+            g2d.drawString("o", cherry.getX(), cherry.getY());
+            
+             if (snake.getHead().intersects(cherry)) {
+                snake.addTail();
+                cherry = null;
+            }
+        }      
     } 
+    
+    public void spawnCherry() {
+        cherry = new Point((new Random()).nextInt(800), (new Random()).nextInt(600));
+    }
+    
 
     private class TAdapter extends KeyAdapter {
         @Override

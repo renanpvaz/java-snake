@@ -17,16 +17,8 @@ public class Snake {
         this.tail = new ArrayList<Point>();
         
         this.tail.add(new Point(0, 0));
-        this.tail.add(new Point(0, 1));
-        this.tail.add(new Point(0, 2));
-        this.tail.add(new Point(0, 2));
-        this.tail.add(new Point(0, 2));
-        this.tail.add(new Point(0, 2));
-        this.tail.add(new Point(0, 2));
-        this.tail.add(new Point(0, 2));
-        this.tail.add(new Point(0, 2));
-        this.tail.add(new Point(0, 2));
-        
+        this.tail.add(new Point(0, 0));
+        this.tail.add(new Point(0, 0));    
     }
 
     public void move() {
@@ -44,6 +36,10 @@ public class Snake {
         this.head.move(this.direction, 20);
     }
     
+    public void addTail() {
+        this.tail.add(new Point(head));
+    }
+        
     public int getOffsetX() {
         switch(this.direction) {
             case RIGHT: return -8;      

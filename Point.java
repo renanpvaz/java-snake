@@ -19,9 +19,6 @@ public class Point {
             case RIGHT: this.x += value; break;      
             case LEFT: this.x -= value; break;        
         }
-        
-        //this.y = Math.round(((this.y + 10 - 1) / 10) * 10);
-        //this.x = Math.round(((this.x + 10 - 1) / 10) * 10);
     }
 
     public int getX() {
@@ -75,5 +72,12 @@ public class Point {
     
     public String toString() {
         return "(" + x + ", " + y + ")";
+    }
+    
+    public boolean intersects(Point p) {
+        int diffX = Math.abs(x - p.getX());
+        int diffY = Math.abs(y - p.getY());
+        
+        return this.equals(p) || (diffX <= 10 && diffY <= 10);
     }
 }
