@@ -1,8 +1,8 @@
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 
-public class BoardMain extends JFrame {
-    public BoardMain() {    
+public class Main extends JFrame {
+    public Main() {    
         initUI();
     }
     
@@ -19,7 +19,7 @@ public class BoardMain extends JFrame {
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
-            BoardMain ex = new BoardMain();
+            Main ex = new Main();
             ex.setVisible(true);
         });
     }

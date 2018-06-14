@@ -50,9 +50,13 @@ public class Point {
     }
     
     public boolean intersects(Point p) {
+        return intersects(p, 10);
+    }
+    
+    public boolean intersects(Point p, int tollerance) {
         int diffX = Math.abs(x - p.getX());
         int diffY = Math.abs(y - p.getY());
         
-        return this.equals(p) || (diffX <= 10 && diffY <= 10);
+        return this.equals(p) || (diffX <= tollerance && diffY <= tollerance);
     }
 }

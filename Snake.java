@@ -16,15 +16,6 @@ public class Snake {
         this.tail.add(new Point(0, 0));
         this.tail.add(new Point(0, 0));
         this.tail.add(new Point(0, 0));
-        this.tail.add(new Point(0, 0));
-        this.tail.add(new Point(0, 0));
-        this.tail.add(new Point(0, 0));
-        this.tail.add(new Point(0, 0));
-        this.tail.add(new Point(0, 0));
-        this.tail.add(new Point(0, 0));
-        this.tail.add(new Point(0, 0));
-        this.tail.add(new Point(0, 0));
-        this.tail.add(new Point(0, 0));
     }
 
     public void move() {
