@@ -8,14 +8,23 @@ public class Snake {
     private Point head;
     private ArrayList<Point> tail;
     
-    public Snake() {
-        this.head = new Point(200, 150);
+    public Snake(int x, int y) {
+        this.head = new Point(x, y);
         this.direction = Direction.RIGHT;
         this.tail = new ArrayList<Point>();
         
         this.tail.add(new Point(0, 0));
         this.tail.add(new Point(0, 0));
-        this.tail.add(new Point(0, 0));    
+        this.tail.add(new Point(0, 0));
+        this.tail.add(new Point(0, 0));
+        this.tail.add(new Point(0, 0));
+        this.tail.add(new Point(0, 0));
+        this.tail.add(new Point(0, 0));
+        this.tail.add(new Point(0, 0));
+        this.tail.add(new Point(0, 0));
+        this.tail.add(new Point(0, 0));
+        this.tail.add(new Point(0, 0));
+        this.tail.add(new Point(0, 0));
     }
 
     public void move() {

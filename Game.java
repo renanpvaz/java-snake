@@ -9,7 +9,15 @@ import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
 import java.util.Timer;
 import java.awt.Font;
+import java.awt.Image;
+import javax.imageio.ImageIO;
 import java.util.Random;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import java.io.*;
+import javax.imageio.*;
+import javax.swing.*;
 
 public class Game extends JPanel {
     private Timer timer;
@@ -17,6 +25,8 @@ public class Game extends JPanel {
     private Point cherry;
     private int points = 0;
     private boolean gameOver = false;
+    private boolean started = false;
+    private BufferedImage image;
     
     private static int DELAY = 50;
     private static double CHERRY_SPAWN_CHANCE = .2;
@@ -24,20 +34,25 @@ public class Game extends JPanel {
     private int fps;
 
     public Game() {
-        init();
-    }
-    
-    private void init() {
+        try {
+            image = ImageIO.read(new File("cherry2.jpg"));
+        } catch (IOException e) {
+        }
+               
         addKeyListener(new TAdapter());
         setFocusable(true);
         setBackground(Color.black);
         setDoubleBuffered(true);
 
-        snake = new Snake();
-        
-        timer = new Timer();
-        timer.schedule(new GameLoop(), 0, DELAY);
+        snake = new Snake(400, 250);
+        timer = new Timer(); 
+        repaint();
     }
+    
+    private void start() {
+        started = true;
+        timer.schedule(new GameLoop(), 0, DELAY);
+    } 
 
     @Override
     public void paintComponent(Graphics g) {
@@ -51,14 +66,14 @@ public class Game extends JPanel {
     private void update() {
         snake.move();
         
-        if (Math.random() <= CHERRY_SPAWN_CHANCE && cherry == null) {
-            spawnCherry();
-        }
-        
         if (cherry != null && snake.getHead().intersects(cherry)) {
             snake.addTail();
             cherry = null;
-            points++;
+            points++;          
+        }
+        
+        if (cherry == null) {
+            spawnCherry();
         }
         
         checkForGameOver();
@@ -67,9 +82,9 @@ public class Game extends JPanel {
     private void checkForGameOver() {
         Point head = snake.getHead();
         boolean hitBoundary = head.getX() <= 0 
-            || head.getX() + 30 >= 800 
+            || head.getX() + 10 >= 800 
             || head.getY() <= 0 
-            || head.getY() + 30 >= 600;
+            || head.getY() + 10 >= 600;
             
         boolean ateItself = false;
         
@@ -86,41 +101,73 @@ public class Game extends JPanel {
         g2d.setColor(Color.GREEN);
         g2d.setFont(new Font("Courier", Font.PLAIN, 12)); 
         
-        Point p = snake.getHead();
+        if (started) {
+            Point p = snake.getHead();
         
-        g2d.drawString("SNAKE", 10, 14);
-        g2d.drawString("Points: " + points, 700, 14);
-        
-        g2d.fillRect(p.getX(), p.getY(), 10, 10);
-        
-        for(Point t : snake.getTail()) {
-            g2d.fillRect(t.getX(), t.getY(), 10, 10);
-        }
-        
-        if (cherry != null) {
-            g2d.setColor(Color.RED);
-            g2d.fillOval(cherry.getX(), cherry.getY(), 10, 10);
-        }
-        
-        if (gameOver) {
-            g2d.setFont(new Font("Courier", Font.PLAIN, 30)); 
-            g2d.drawString("GAME OVER", 300, 300);
-        }         
+            if (cherry != null) g2d.drawString("cherry = "+ cherry.toString(), 10, 14);
+            
+            g2d.drawString("snake = "+ snake.getHead().toString(), 10, 24);
+            
+            g2d.drawString("Points: " + points, 700, 14);
+            
+            g2d.setColor(new Color(74, 245, 14));
+            g2d.fillRect(p.getX(), p.getY(), 10, 10);      
+            
+            for(int i = 0, size = snake.getTail().size(); i < size; i++) {
+                Point t = snake.getTail().get(i);
+                
+                g2d.setColor(new Color(74 - (i * 4), 245 - (i * 10), 14));
+                g2d.fillRect(t.getX(), t.getY(), 10, 10);
+            }
+            
+            if (cherry != null) {
+                g2d.setColor(Color.RED);
+                g2d.drawImage(image, cherry.getX(), cherry.getY(), 20, 20, null);
+            }
+            
+            if (gameOver) {
+                g2d.setFont(new Font("Courier", Font.PLAIN, 30)); 
+                g2d.drawString("GAME OVER", 300, 300);
+            }      
+        } else {
+          g2d.setFont(new Font("Courier", Font.PLAIN, 18));  
+          g2d.setColor(new Color(71, 128, 0));
+          
+          g2d.drawString("Press any key to begin", 250, 340);
+            
+          g2d.drawString("███████╗███╗   ██╗ █████╗ ██╗   ██╗███████╗", 150, 150);
+          g2d.setColor(new Color(30, 109, 30));
+          g2d.drawString("██╔════╝████╗  ██║██╔══██╗██║  ██╔╝██╔════╝", 150, 170);
+          g2d.setColor(new Color(41, 103, 41));
+          g2d.drawString("███████╗██╔██╗ ██║███████║██████╔╝ █████╗  ", 150, 190);
+          g2d.setColor(new Color(45, 90, 45));
+          g2d.drawString("╚════██║██║╚██╗██║██╔══██║██║  ██╗ ██╔══╝  ", 150, 210);
+          g2d.setColor(new Color(49, 78, 49));
+          g2d.drawString("███████║██║ ╚████║██║  ██║██║   ██╗███████╗", 150, 230);
+          g2d.setColor(new Color(46, 66, 46));
+          g2d.drawString("╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝   ╚═╝╚══════╝", 150, 250);
+          
+        }             
     } 
     
     public void spawnCherry() {
-        cherry = new Point((new Random()).nextInt(800), (new Random()).nextInt(600));
+        cherry = new Point((new Random()).nextInt(780) + 10, 
+            (new Random()).nextInt(580) + 10);
     }
     
     private class TAdapter extends KeyAdapter {
         @Override
         public void keyReleased(KeyEvent e) {
-            switch(e.getKeyCode()) {
-                case KeyEvent.VK_LEFT: snake.turn(Direction.LEFT); break;    
-                case KeyEvent.VK_RIGHT: snake.turn(Direction.RIGHT); break;
-                case KeyEvent.VK_UP: snake.turn(Direction.UP); break;  
-                case KeyEvent.VK_DOWN: snake.turn(Direction.DOWN); break;        
-            }
+            if (started) {
+                switch(e.getKeyCode()) {
+                    case KeyEvent.VK_LEFT: snake.turn(Direction.LEFT); break;    
+                    case KeyEvent.VK_RIGHT: snake.turn(Direction.RIGHT); break;
+                    case KeyEvent.VK_UP: snake.turn(Direction.UP); break;  
+                    case KeyEvent.VK_DOWN: snake.turn(Direction.DOWN); break;        
+                }
+            } else {
+                start();
+            }         
         }
     }
     
