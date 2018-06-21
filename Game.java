@@ -148,6 +148,7 @@ public class Game extends JPanel {
           } else {
             g2d.setColor(Color.RED);
             g2d.fillOval(cherry.getX(), cherry.getY(), 10, 10);
+            g2d.setColor(new Color(53, 220, 8));
           }
         }
 
