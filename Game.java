@@ -184,7 +184,7 @@ public class Game extends JPanel {
 
     private class KeyListener extends KeyAdapter {
         @Override
-        public void keyReleased(KeyEvent e) {
+        public void keyPressed(KeyEvent e) {
             int key = e.getKeyCode();
            
             if (status == GameStatus.RUNNING) {
