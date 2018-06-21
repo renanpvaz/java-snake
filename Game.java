@@ -24,6 +24,7 @@ public class Game extends JPanel {
     private Snake snake;
     private Point cherry;
     private int points = 0;
+    private int best = 0;
     private BufferedImage image;
     private GameStatus status;
     
@@ -84,15 +85,19 @@ public class Game extends JPanel {
     }
     
     private void setStatus(GameStatus newStatus) {
-        if (status != newStatus) {
-            if (newStatus == GameStatus.RUNNING) {
+        switch(newStatus) {
+            case RUNNING:
                 timer = new Timer();
                 timer.schedule(new GameLoop(), 0, DELAY);
-            } else if (newStatus != GameStatus.NOT_STARTED) {
+                break;
+            case PAUSED:
                 timer.cancel();
-            }
+            case GAME_OVER:
+                timer.cancel();
+                best = points > best ? points : best;
+                break;
         }
-        
+       
         status = newStatus;
     }
     
@@ -112,8 +117,10 @@ public class Game extends JPanel {
         for(Point t : snake.getTail()) {
             ateItself = ateItself || head.equals(t);
         }
-
-        setStatus(hitBoundary || ateItself ? GameStatus.GAME_OVER : status);
+        
+        if (hitBoundary || ateItself) {
+            setStatus(GameStatus.GAME_OVER);
+        }  
     }
     
     public void drawCenteredString(Graphics g, String text, Font font, int y) {
@@ -141,6 +148,7 @@ public class Game extends JPanel {
         Point p = snake.getHead(); 
 
         g2d.drawString("SCORE: " + String.format ("%04d", points), 20, 30);
+        g2d.drawString("BEST: " + String.format ("%04d", best), 660, 30);
         
         if (cherry != null) {
             g2d.drawImage(image, cherry.getX(), cherry.getY(), 60, 60, null);
