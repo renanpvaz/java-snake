@@ -1,9 +1,12 @@
-<img align="center" src="https://github.com/renanpvaz/java-snake/raw/master/preview.gif" width=400 />
-
 <div align="center">
-  <strong>Simple Snake game made for a college assignment using Java.</strong>
+  <img width="400" alt="Game Preview" src="preview.gif?raw=true">
 </div>
 
+<br>
+
+<div align="center">
+  Simple Snake game made for a college assignment using Java.
+</div>
 
 ## Running
 
