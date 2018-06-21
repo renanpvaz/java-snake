@@ -24,16 +24,16 @@ public class Game extends JPanel {
     private Snake snake;
     private Point cherry;
     private int points = 0;
-    private int lastKeyPressed = 0;
-    private int pKey = 0;
     private BufferedImage image;
     private GameStatus status;
     
+    private static Font FONT_M = new Font("ArcadeClassic", Font.PLAIN, 24);
+    private static Font FONT_M_ITALIC = new Font("ArcadeClassic", Font.ITALIC, 24);
+    private static Font FONT_L = new Font("ArcadeClassic", Font.PLAIN, 84);
+    private static Font FONT_XL = new Font("ArcadeClassic", Font.PLAIN, 150);
     private static int WIDTH = 760;
     private static int HEIGHT = 520;
     private static int DELAY = 50;
-
-    private int fps;
 
     public Game() {
         try {
@@ -46,7 +46,7 @@ public class Game extends JPanel {
         setBackground(Color.black);
         setDoubleBuffered(true);
 
-        snake = new Snake(400, 250);
+        snake = new Snake(WIDTH / 2, HEIGHT / 2);
         status = GameStatus.NOT_STARTED;
         repaint();
     }
@@ -74,6 +74,13 @@ public class Game extends JPanel {
         }
 
         checkForGameOver();
+    }
+    
+    private void reset() {
+        points = 0;
+        cherry = null;
+        snake = new Snake(WIDTH / 2, HEIGHT / 2);
+        setStatus(GameStatus.RUNNING);
     }
     
     private void setStatus(GameStatus newStatus) {
@@ -108,45 +115,40 @@ public class Game extends JPanel {
 
         setStatus(hitBoundary || ateItself ? GameStatus.GAME_OVER : status);
     }
-
+    
+    public void drawCenteredString(Graphics g, String text, Font font, int y) {
+        FontMetrics metrics = g.getFontMetrics(font);
+        int x = (WIDTH - metrics.stringWidth(text)) / 2;
+        
+        g.setFont(font);
+        g.drawString(text, x, y);
+    }
+    
     private void render(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
 
-        g2d.setColor(Color.GREEN);
-        g2d.setFont(new Font("Courier", Font.PLAIN, 12));
+        g2d.setColor(new Color(53, 220, 8));
+        g2d.setFont(FONT_M);
         
         if (status == GameStatus.NOT_STARTED) {
-          g2d.setFont(new Font("Courier", Font.PLAIN, 18));
-          g2d.setColor(new Color(71, 128, 0));
-
-          g2d.drawString("Press any key to begin", 250, 340);
-
-          g2d.drawString("███████╗███╗   ██╗ █████╗ ██╗   ██╗███████╗", 150, 150);
-          g2d.setColor(new Color(30, 109, 30));
-          g2d.drawString("██╔════╝████╗  ██║██╔══██╗██║  ██╔╝██╔════╝", 150, 170);
-          g2d.setColor(new Color(41, 103, 41));
-          g2d.drawString("███████╗██╔██╗ ██║███████║██████╔╝ █████╗  ", 150, 190);
-          g2d.setColor(new Color(45, 90, 45));
-          g2d.drawString("╚════██║██║╚██╗██║██╔══██║██║  ██╗ ██╔══╝  ", 150, 210);
-          g2d.setColor(new Color(49, 78, 49));
-          g2d.drawString("███████║██║ ╚████║██║  ██║██║   ██╗███████╗", 150, 230);
-          g2d.setColor(new Color(46, 66, 46));
-          g2d.drawString("╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝   ╚═╝╚══════╝", 150, 250);
-
+          drawCenteredString(g2d, "SNAKE", FONT_XL, 200);
+          drawCenteredString(g2d, "GAME", FONT_XL, 300);
+          drawCenteredString(g2d, "Press  any  key  to  begin", FONT_M_ITALIC, 330);
+          
           return;
         }
 
         Point p = snake.getHead(); 
 
-        g2d.drawString("Points: " + points, 20, 20);
+        g2d.drawString("SCORE: " + String.format ("%04d", points), 20, 30);
         
         if (cherry != null) {
             g2d.drawImage(image, cherry.getX(), cherry.getY(), 60, 60, null);
         }   
         
         if (status == GameStatus.GAME_OVER) {
-            g2d.setFont(new Font("Courier", Font.PLAIN, 30));
-            g2d.drawString("GAME OVER", 300, 300);
+            drawCenteredString(g2d, "Press  enter  to  start  again", FONT_M_ITALIC, 330);
+            drawCenteredString(g2d, "GAME OVER", FONT_L, 300);
         }
             
         if (status == GameStatus.PAUSED) {
@@ -169,7 +171,7 @@ public class Game extends JPanel {
 
     public void spawnCherry() {
         cherry = new Point((new Random()).nextInt(WIDTH - 60) + 20,
-            (new Random()).nextInt(HEIGHT - 60) + 20);
+            (new Random()).nextInt(HEIGHT - 60) + 40);
     }
 
     private class KeyListener extends KeyAdapter {
@@ -188,6 +190,10 @@ public class Game extends JPanel {
             
             if (status == GameStatus.NOT_STARTED) {
                 setStatus(GameStatus.RUNNING);
+            }
+            
+            if (status == GameStatus.GAME_OVER && key == KeyEvent.VK_ENTER) {
+                reset();
             }
             
             if (key == KeyEvent.VK_P) {

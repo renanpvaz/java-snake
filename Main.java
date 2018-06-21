@@ -9,7 +9,7 @@ public class Main extends JFrame {
     private void initUI() {
         add(new Game());
 
-        setTitle("Moving sprite");
+        setTitle("Snake 1.0");
         setSize(800, 600);
         
         setLocationRelativeTo(null);
