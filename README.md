@@ -17,5 +17,5 @@
 3. Inside the folder where the downloaded .jar is run:
 
 ```
-java -jar snake-1.0.jar
+java -jar snake.jar
 ```

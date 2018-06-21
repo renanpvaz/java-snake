@@ -2,16 +2,16 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 
 public class Main extends JFrame {
-    public Main() {    
+    public Main() {
         initUI();
     }
-    
+
     private void initUI() {
         add(new Game());
 
-        setTitle("Snake 1.0");
+        setTitle("Snake 1.1");
         setSize(800, 600);
-        
+
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
