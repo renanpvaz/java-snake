@@ -24,12 +24,12 @@ public class Game extends JPanel {
     private Snake snake;
     private Point cherry;
     private int points = 0;
-    private boolean gameOver = false;
-    private boolean started = false;
+    private int lastKeyPressed = 0;
+    private int pKey = 0;
     private BufferedImage image;
+    private GameStatus status;
 
     private static int DELAY = 50;
-    private static double CHERRY_SPAWN_CHANCE = .2;
 
     private int fps;
 
@@ -39,21 +39,16 @@ public class Game extends JPanel {
         } catch (IOException e) {
         }
 
-        addKeyListener(new TAdapter());
+        addKeyListener(new KeyListener());
         setFocusable(true);
         setBackground(Color.black);
         setDoubleBuffered(true);
 
         snake = new Snake(400, 250);
-        timer = new Timer();
+        status = GameStatus.NOT_STARTED;
         repaint();
     }
-
-    private void start() {
-        started = true;
-        timer.schedule(new GameLoop(), 0, DELAY);
-    }
-
+    
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -78,7 +73,24 @@ public class Game extends JPanel {
 
         checkForGameOver();
     }
-
+    
+    private void setStatus(GameStatus newStatus) {
+        if (status != newStatus) {
+            if (newStatus == GameStatus.RUNNING) {
+                timer = new Timer();
+                timer.schedule(new GameLoop(), 0, DELAY);
+            } else if (newStatus != GameStatus.NOT_STARTED) {
+                timer.cancel();
+            }
+        }
+        
+        status = newStatus;
+    }
+    
+    private void togglePause() {
+        setStatus(status == GameStatus.PAUSED ? GameStatus.RUNNING : GameStatus.PAUSED);
+    }
+    
     private void checkForGameOver() {
         Point head = snake.getHead();
         boolean hitBoundary = head.getX() <= 0
@@ -92,7 +104,7 @@ public class Game extends JPanel {
             ateItself = ateItself || head.equals(t);
         }
 
-        gameOver = hitBoundary || ateItself ;
+        setStatus(hitBoundary || ateItself ? GameStatus.GAME_OVER : status);
     }
 
     private void render(Graphics g) {
@@ -100,34 +112,8 @@ public class Game extends JPanel {
 
         g2d.setColor(Color.GREEN);
         g2d.setFont(new Font("Courier", Font.PLAIN, 12));
-
-        if (started) {
-            Point p = snake.getHead();
-
-            if (cherry != null) g2d.drawString("cherry = "+ cherry.toString(), 10, 14);
-
-            g2d.drawString("snake = "+ snake.getHead().toString(), 10, 24);
-
-            g2d.drawString("Points: " + points, 700, 14);
-
-            g2d.setColor(new Color(74, 245, 14));
-            g2d.fillRect(p.getX(), p.getY(), 10, 10);
-
-            for(int i = 0, size = snake.getTail().size(); i < size; i++) {
-                Point t = snake.getTail().get(i);
-
-                g2d.fillRect(t.getX(), t.getY(), 10, 10);
-            }
-
-            if (cherry != null) {
-                g2d.drawImage(image, cherry.getX(), cherry.getY(), 60, 60, null);
-            }
-
-            if (gameOver) {
-                g2d.setFont(new Font("Courier", Font.PLAIN, 30));
-                g2d.drawString("GAME OVER", 300, 300);
-            }
-        } else {
+        
+        if (status == GameStatus.NOT_STARTED) {
           g2d.setFont(new Font("Courier", Font.PLAIN, 18));
           g2d.setColor(new Color(71, 128, 0));
 
@@ -145,6 +131,33 @@ public class Game extends JPanel {
           g2d.setColor(new Color(46, 66, 46));
           g2d.drawString("╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝   ╚═╝╚══════╝", 150, 250);
 
+          return;
+        }
+
+        Point p = snake.getHead();
+
+        g2d.drawString("Points: " + points, 700, 14);
+        
+        if (cherry != null) {
+            g2d.drawImage(image, cherry.getX(), cherry.getY(), 60, 60, null);
+        }   
+        
+        if (status == GameStatus.GAME_OVER) {
+            g2d.setFont(new Font("Courier", Font.PLAIN, 30));
+            g2d.drawString("GAME OVER", 300, 300);
+        }
+            
+        if (status == GameStatus.PAUSED) {
+            g2d.drawString("Paused", 600, 14);
+        }
+        
+        g2d.setColor(new Color(74, 245, 14));
+        g2d.fillRect(p.getX(), p.getY(), 10, 10);
+
+        for(int i = 0, size = snake.getTail().size(); i < size; i++) {
+            Point t = snake.getTail().get(i);
+
+            g2d.fillRect(t.getX(), t.getY(), 10, 10);
         }
     }
 
@@ -153,18 +166,26 @@ public class Game extends JPanel {
             (new Random()).nextInt(560));
     }
 
-    private class TAdapter extends KeyAdapter {
+    private class KeyListener extends KeyAdapter {
         @Override
         public void keyReleased(KeyEvent e) {
-            if (started) {
-                switch(e.getKeyCode()) {
+            int key = e.getKeyCode();
+           
+            if (status == GameStatus.RUNNING) {
+                switch(key) {
                     case KeyEvent.VK_LEFT: snake.turn(Direction.LEFT); break;
                     case KeyEvent.VK_RIGHT: snake.turn(Direction.RIGHT); break;
                     case KeyEvent.VK_UP: snake.turn(Direction.UP); break;
                     case KeyEvent.VK_DOWN: snake.turn(Direction.DOWN); break;
                 }
-            } else {
-                start();
+            }
+            
+            if (status == GameStatus.NOT_STARTED) {
+                setStatus(GameStatus.RUNNING);
+            }
+            
+            if (key == KeyEvent.VK_P) {
+                togglePause();
             }
         }
     }
@@ -173,10 +194,6 @@ public class Game extends JPanel {
         public void run() {
             update();
             repaint();
-
-            if (gameOver) {
-                timer.cancel();
-            }
         }
     }
 }
