@@ -17,6 +17,7 @@ public class Game extends JPanel {
     private int best = 0;
     private BufferedImage image;
     private GameStatus status;
+    private boolean didLoadCherryImage = true;
 
     private static Font FONT_M = new Font("ArcadeClassic", Font.PLAIN, 24);
     private static Font FONT_M_ITALIC = new Font("ArcadeClassic", Font.ITALIC, 24);
@@ -30,6 +31,7 @@ public class Game extends JPanel {
         try {
             image = ImageIO.read(new File("cherry.png"));
         } catch (IOException e) {
+          didLoadCherryImage = false;
         }
 
         addKeyListener(new KeyListener());
@@ -141,7 +143,12 @@ public class Game extends JPanel {
         g2d.drawString("BEST: " + String.format ("%04d", best), 660, 30);
 
         if (cherry != null) {
+          if (didLoadCherryImage) {
             g2d.drawImage(image, cherry.getX(), cherry.getY(), 60, 60, null);
+          } else {
+            g2d.setColor(Color.RED);
+            g2d.fillOval(cherry.getX(), cherry.getY(), 10, 10);
+          }
         }
 
         if (status == GameStatus.GAME_OVER) {
