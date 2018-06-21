@@ -57,6 +57,6 @@ public class Point {
         int diffX = Math.abs(x - p.getX());
         int diffY = Math.abs(y - p.getY());
 
-        return this.equals(p) || (diffX <= tollerance && diffY <= tolerance);
+        return this.equals(p) || (diffX <= tolerance && diffY <= tolerance);
     }
 }
