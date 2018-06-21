@@ -28,7 +28,9 @@ public class Game extends JPanel {
     private int pKey = 0;
     private BufferedImage image;
     private GameStatus status;
-
+    
+    private static int WIDTH = 760;
+    private static int HEIGHT = 520;
     private static int DELAY = 50;
 
     private int fps;
@@ -93,10 +95,10 @@ public class Game extends JPanel {
     
     private void checkForGameOver() {
         Point head = snake.getHead();
-        boolean hitBoundary = head.getX() <= 0
-            || head.getX() >= 800
-            || head.getY() <= 0
-            || head.getY() >= 570;
+        boolean hitBoundary = head.getX() <= 20
+            || head.getX() >= WIDTH + 10
+            || head.getY() <= 40
+            || head.getY() >= HEIGHT + 30;
 
         boolean ateItself = false;
 
@@ -134,9 +136,9 @@ public class Game extends JPanel {
           return;
         }
 
-        Point p = snake.getHead();
+        Point p = snake.getHead(); 
 
-        g2d.drawString("Points: " + points, 700, 14);
+        g2d.drawString("Points: " + points, 20, 20);
         
         if (cherry != null) {
             g2d.drawImage(image, cherry.getX(), cherry.getY(), 60, 60, null);
@@ -159,11 +161,15 @@ public class Game extends JPanel {
 
             g2d.fillRect(t.getX(), t.getY(), 10, 10);
         }
+        
+        g2d.setColor(new Color(71, 128, 0));
+        g2d.setStroke(new BasicStroke(4));
+        g2d.drawRect(20, 40, WIDTH, HEIGHT);
     }
 
     public void spawnCherry() {
-        cherry = new Point((new Random()).nextInt(780),
-            (new Random()).nextInt(560));
+        cherry = new Point((new Random()).nextInt(WIDTH - 60) + 20,
+            (new Random()).nextInt(HEIGHT - 60) + 20);
     }
 
     private class KeyListener extends KeyAdapter {
